@@ -6,5 +6,6 @@ import (
 )
 
 func main() {
-	fmt.Println(api.FetchImage())
+	// fmt.Println(api.FetchImage())
+	fmt.Println(api.FetchMeta("two-jp-baseball-super-stars"))
 }
