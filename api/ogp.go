@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/PuerkitoBio/goquery"
 	"github.com/joho/godotenv"
 )
 
@@ -37,9 +36,6 @@ func httpClient() *http.Client {
 	return &http.Client{}
 }
 
-// Memo
-// Client: Set ogp image to the hosted server
-// Server: Fetch a ramdom image from Unsplash API -> Fetch meta title from the client -> Take a screenshot with headless crome -> return the image
 func FetchRandomImageURL() string {
 	var ACCESS_KEY = os.Getenv("UNSPLASH_ACCESS_KEY")
 	client := httpClient()
@@ -58,29 +54,29 @@ func FetchRandomImageURL() string {
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 
-	if err := json.Unmarshal(body, &result); err != nil { // Parse []byte to go struct pointer
-		fmt.Println("Can not unmarshal JSON")
+	if err := json.Unmarshal(body, &result); err != nil {
+		log.Fatal(err)
 	}
 
 	return result.URLS.Raw
 }
 
-func FetchOpenGraphTitle(title string) string {
-	client := httpClient()
+// func FetchOpenGraphTitle(title string) string {
+// 	client := httpClient()
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/blog/%s", BLOG_ENDPOINT, title), nil)
+// 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/blog/%s", BLOG_ENDPOINT, title), nil)
 
-	res, err := client.Do(req)
+// 	res, err := client.Do(req)
 
-	if err != nil {
-		var errMsg = fmt.Sprintf("Failed to fetch: %s", err)
-		log.Fatal(errMsg)
-	}
+// 	if err != nil {
+// 		var errMsg = fmt.Sprintf("Failed to fetch: %s", err)
+// 		log.Fatal(errMsg)
+// 	}
 
-	defer res.Body.Close()
+// 	defer res.Body.Close()
 
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	attr, _ := doc.Find("meta[property='og:title']").Attr("content")
+// 	doc, err := goquery.NewDocumentFromReader(res.Body)
+// 	attr, _ := doc.Find("meta[property='og:title']").Attr("content")
 
-	return attr
-}
+// 	return attr
+// }
