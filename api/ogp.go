@@ -22,14 +22,14 @@ func init() {
 const UNSPLASH_ENDPOINT = "https://api.unsplash.com/photos/random"
 const BLOG_ENDPOINT = "https://www.k-sato-0130.com/"
 
-type Response struct {
+type Res struct {
 	ID   string `json:"id"`
 	URLS struct {
 		Raw string `json:"raw"`
 	}
 }
 
-var result Response
+var result Res
 
 func httpClient() *http.Client {
 	return &http.Client{}
