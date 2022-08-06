@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"ogp-server/api"
 )
 
 func main() {
-	api.Print()
+	fmt.Println(api.FetchImage())
 }
