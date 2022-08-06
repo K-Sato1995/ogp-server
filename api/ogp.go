@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -22,6 +23,16 @@ func init() {
 const UNSPLASH_ENDPOINT = "https://api.unsplash.com/photos/random"
 const BLOG_ENDPOINT = "https://www.k-sato-0130.com/"
 
+type Response struct {
+	ID   string `json:"id"`
+	URLS struct {
+		Raw string `json:"raw"`
+	}
+}
+
+// snippet only
+var result Response
+
 func httpClient() *http.Client {
 	return &http.Client{}
 }
@@ -29,7 +40,7 @@ func httpClient() *http.Client {
 // Memo
 // Client: Set ogp image to the hosted server
 // Server: Fetch a ramdom image from Unsplash API -> Fetch meta title from the client -> Take a screenshot with headless crome -> return the image
-func FetchImage() string {
+func FetchRandomImageURL() string {
 	var ACCESS_KEY = os.Getenv("UNSPLASH_ACCESS_KEY")
 	client := httpClient()
 
@@ -47,11 +58,14 @@ func FetchImage() string {
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 
-	sb := string(body)
-	return sb
+	if err := json.Unmarshal(body, &result); err != nil { // Parse []byte to go struct pointer
+		fmt.Println("Can not unmarshal JSON")
+	}
+
+	return result.URLS.Raw
 }
 
-func FetchMeta(title string) string {
+func FetchOpenGraphTitle(title string) string {
 	client := httpClient()
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/blog/%s", BLOG_ENDPOINT, title), nil)
