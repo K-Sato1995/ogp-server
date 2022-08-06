@@ -29,14 +29,13 @@ type Response struct {
 	}
 }
 
-// snippet only
 var result Response
 
 func httpClient() *http.Client {
 	return &http.Client{}
 }
 
-func FetchRandomImageURL() string {
+func fetchRandomImageURL() string {
 	var ACCESS_KEY = os.Getenv("UNSPLASH_ACCESS_KEY")
 	client := httpClient()
 
@@ -59,6 +58,11 @@ func FetchRandomImageURL() string {
 	}
 
 	return result.URLS.Raw
+}
+
+func Handler(w http.ResponseWriter, r *http.Request) {
+	imgUrl := fetchRandomImageURL()
+	fmt.Fprintf(w, imgUrl)
 }
 
 // func FetchOpenGraphTitle(title string) string {
