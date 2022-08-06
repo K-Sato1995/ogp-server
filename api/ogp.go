@@ -7,17 +7,15 @@ import (
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
-func init() {
-	err := godotenv.Load(".env")
+// func init() {
+// 	err := godotenv.Load(".env")
 
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
+// 	if err != nil {
+// 		log.Fatal("Error loading .env file")
+// 	}
+// }
 
 const UNSPLASH_ENDPOINT = "https://api.unsplash.com/photos/random"
 const BLOG_ENDPOINT = "https://www.k-sato-0130.com/"
