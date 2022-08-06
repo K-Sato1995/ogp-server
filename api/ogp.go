@@ -24,6 +24,9 @@ func httpClient() *http.Client {
 	return &http.Client{}
 }
 
+// Memo
+// Client: Set ogp image to the hosted server
+// Server: Fetch a ramdom image from Unsplash API -> Fetch meta title from the client -> Take a screenshot with headless crome -> return the image
 func FetchImage() string {
 	var ACCESS_KEY = os.Getenv("UNSPLASH_ACCESS_KEY")
 	client := httpClient()
