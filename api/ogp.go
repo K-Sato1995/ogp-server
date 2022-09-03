@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -65,12 +66,17 @@ func FetchRandomImageURL() string {
 // https://ogp-server-k-sato1995.vercel.app/api/ogp
 func Handler(w http.ResponseWriter, r *http.Request) {
 	// imgUrl := FetchRandomImageURL()
+	// bytes := Screenshot()
 	log.Printf("Request received")
+	fileBytes, err := ioutil.ReadFile("elementScreenshot.png")
+	if err != nil {
+		panic(err)
+	}
 
-	bytes := Screenshot()
-
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Write(bytes)
+	w.Write(fileBytes)
+	return
 }
 
 func Screenshot() []byte {
@@ -91,10 +97,10 @@ func Screenshot() []byte {
 	log.Printf("Screenshot taken")
 
 	log.Println(buf)
-	// if err := ioutil.WriteFile("elementScreenshot.png", buf, 0o644); err != nil {
-	// 	log.Fatal(err)
-	// }
-	// log.Printf("wrote elementScreenshot.png and fullScreenshot.png")
+	if err := ioutil.WriteFile("elementScreenshot.png", buf, 0o644); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("wrote elementScreenshot.png and fullScreenshot.png")
 	return buf
 
 }
