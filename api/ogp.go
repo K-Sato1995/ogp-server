@@ -62,8 +62,10 @@ func FetchRandomImageURL() string {
 	return result.URLS.Raw
 }
 
+// https://ogp-server-k-sato1995.vercel.app/api/ogp
 func Handler(w http.ResponseWriter, r *http.Request) {
 	// imgUrl := FetchRandomImageURL()
+	log.Printf("Request received")
 
 	bytes := Screenshot()
 
@@ -78,10 +80,17 @@ func Screenshot() []byte {
 	)
 	defer cancel()
 
+	log.Printf("Taking screenshot")
+
 	var buf []byte
 	if err := chromedp.Run(ctx, elementScreenshot(`https://pkg.go.dev/`, `img.Homepage-logo`, &buf)); err != nil {
+		log.Println("Failed to take screenshot")
 		log.Fatal(err)
 	}
+
+	log.Printf("Screenshot taken")
+
+	log.Println(buf)
 	// if err := ioutil.WriteFile("elementScreenshot.png", buf, 0o644); err != nil {
 	// 	log.Fatal(err)
 	// }
