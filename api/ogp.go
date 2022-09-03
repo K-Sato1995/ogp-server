@@ -1,13 +1,19 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/chromedp/chromedp"
 )
+
+const UNSPLASH_ENDPOINT = "https://api.unsplash.com/photos/random"
+const BLOG_ENDPOINT = "https://www.k-sato-0130.com/"
 
 // func init() {
 // 	err := godotenv.Load(".env")
@@ -17,9 +23,7 @@ import (
 // 	}
 // }
 
-const UNSPLASH_ENDPOINT = "https://api.unsplash.com/photos/random"
-const BLOG_ENDPOINT = "https://www.k-sato-0130.com/"
-
+// (1) Share url => come to the edege => open up headless chrome and send back a pic
 type Res struct {
 	ID   string `json:"id"`
 	URLS struct {
@@ -33,8 +37,8 @@ func httpClient() *http.Client {
 	return &http.Client{}
 }
 
-func fetchRandomImageURL() string {
-	var ACCESS_KEY = os.Getenv("UNSPLASH_ACCESS_KEY")
+func FetchRandomImageURL() string {
+	ACCESS_KEY := os.Getenv("UNSPLASH_ACCESS_KEY")
 	client := httpClient()
 
 	req, err := http.NewRequest("GET", UNSPLASH_ENDPOINT, nil)
@@ -59,26 +63,35 @@ func fetchRandomImageURL() string {
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	imgUrl := fetchRandomImageURL()
-	fmt.Fprintf(w, imgUrl)
+	// imgUrl := FetchRandomImageURL()
+
+	bytes := Screenshot()
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Write(bytes)
 }
 
-// func FetchOpenGraphTitle(title string) string {
-// 	client := httpClient()
+func Screenshot() []byte {
+	ctx, cancel := chromedp.NewContext(
+		context.Background(),
+		// chromedp.WithDebugf(log.Printf),
+	)
+	defer cancel()
 
-// 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/blog/%s", BLOG_ENDPOINT, title), nil)
+	var buf []byte
+	if err := chromedp.Run(ctx, elementScreenshot(`https://pkg.go.dev/`, `img.Homepage-logo`, &buf)); err != nil {
+		log.Fatal(err)
+	}
+	// if err := ioutil.WriteFile("elementScreenshot.png", buf, 0o644); err != nil {
+	// 	log.Fatal(err)
+	// }
+	// log.Printf("wrote elementScreenshot.png and fullScreenshot.png")
+	return buf
 
-// 	res, err := client.Do(req)
-
-// 	if err != nil {
-// 		var errMsg = fmt.Sprintf("Failed to fetch: %s", err)
-// 		log.Fatal(errMsg)
-// 	}
-
-// 	defer res.Body.Close()
-
-// 	doc, err := goquery.NewDocumentFromReader(res.Body)
-// 	attr, _ := doc.Find("meta[property='og:title']").Attr("content")
-
-// 	return attr
-// }
+}
+func elementScreenshot(urlstr, sel string, res *[]byte) chromedp.Tasks {
+	return chromedp.Tasks{
+		chromedp.Navigate(urlstr),
+		chromedp.Screenshot(sel, res, chromedp.NodeVisible),
+	}
+}
