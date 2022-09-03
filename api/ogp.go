@@ -68,7 +68,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	// imgUrl := FetchRandomImageURL()
 	// bytes := Screenshot()
 	log.Printf("Request received")
-	fileBytes, err := ioutil.ReadFile("elementScreenshot.png")
+	fileBytes, err := ioutil.ReadFile("./elementScreenshot.png")
 	if err != nil {
 		panic(err)
 	}
